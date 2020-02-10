@@ -13,9 +13,9 @@ url = 'http://www.dsit.org.ir/?cmd=page&Cid=92&title=Kontakt&lang=fa'
 r = requests.get(url)
 soup = BeautifulSoup(r.text, 'lxml')
 tag_a = soup.find_all('a')
+
 for i in tag_a:
     print(i.text)
-
 # text_of_html = str(soup)
 # dom = etree.HTML(text_of_html)
 # te = dom.xpath('/html/body/div[1]/div/div/div[8]/div/div/div/div[3]/a[contain(@hreh)]')
