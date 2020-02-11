@@ -1,3 +1,6 @@
+*.ui
+.DS_Store
+
 fair_copy*
 *.xlsx
 test*
