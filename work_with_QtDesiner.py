@@ -11,6 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from time import sleep
 import requests
 from bs4 import BeautifulSoup
+import re
 
 
 class Ui_Dialog(object):
@@ -29,7 +30,7 @@ class Ui_Dialog(object):
         self.model.setGeometry(QtCore.QRect(260, 30, 121, 21))
         self.model.setObjectName("model")
 
-        self.modellist = QtWidgets.QListView(Dialog)
+        self.modellist = QtWidgets.QListWidget(Dialog)
         self.modellist.setGeometry(QtCore.QRect(190, 60, 201, 181))
         self.modellist.setObjectName("modellist")
 
@@ -99,9 +100,21 @@ class Ui_Dialog(object):
         i2 = selected_brand_value.index(',')
         url_endpoint = selected_brand_value[i2+1:]
         global url
+        global url_brand
         url_brand = url + url_endpoint
         global header
-        response = requests.get(url_brand, headers=header)
+        while True:
+            try:
+                response = requests.get(url_brand, headers=header, timeout=3)
+                break
+            except:
+                sleep(5)
+                continue
+        global models
+        models = re.findall(r',([0-9a-zA-Z-]+)&quot;}', response.text)
+        self.modellist.clear()
+        for i in models:
+            self.modellist.addItem(i)
         
         
         
@@ -110,7 +123,28 @@ class Ui_Dialog(object):
 
     def runFunc(self):
         app.processEvents()
-        print ('kdhfs3333')
+        selectec_models = self.modellist.selectedItems()
+        selectec_models_text = selectec_models[0].text()
+        global url_brand
+        url_model = url_brand + '/' + selectec_models_text
+        ads_num = self.munofresult.toPlainText()
+        ads_num = int(ads_num)
+        while True:
+            try:
+                response = requests.get(url_brand, headers=header, timeout=3)
+                break
+            except:
+                sleep(5)
+                continue
+        soup = BeautifulSoup(response.text, 'html.parser')
+        title = soup.select('.persianOrder')
+        counter = 0
+        for i in title:
+            if ads_num > counter:
+                self.result.insertPlainText(i.get_text())
+
+
+
 
 
     def retranslateUi(self, Dialog):
